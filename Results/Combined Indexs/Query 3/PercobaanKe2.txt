@@ -1,0 +1,21 @@
+Limit  (cost=0.59..105.72 rows=100 width=35) (actual time=0.123..0.447 rows=100.00 loops=1)
+  Buffers: shared hit=401
+  ->  Nested Loop  (cost=0.59..15573.45 rows=14814 width=35) (actual time=0.123..0.439 rows=100.00 loops=1)
+        Buffers: shared hit=401
+        ->  Index Scan using idx_orders_status_date on orders o  (cost=0.30..10409.25 rows=14814 width=29) (actual time=0.016..0.080 rows=100.00 loops=1)
+              Index Cond: (((status)::text = 'pending'::text) AND (order_date < (CURRENT_DATE - '7 days'::interval)))
+              Index Searches: 1
+              Buffers: shared hit=101
+        ->  Memoize  (cost=0.30..0.46 rows=1 width=22) (actual time=0.003..0.003 rows=1.00 loops=100)
+              Cache Key: o.customer_id
+              Cache Mode: logical
+              Hits: 0  Misses: 100  Evictions: 0  Overflows: 0  Memory Usage: 13kB
+              Buffers: shared hit=300
+              ->  Index Scan using customers_pkey on customers c  (cost=0.29..0.45 rows=1 width=22) (actual time=0.002..0.002 rows=1.00 loops=100)
+                    Index Cond: (customer_id = o.customer_id)
+                    Index Searches: 100
+                    Buffers: shared hit=300
+Planning:
+  Buffers: shared hit=14
+Planning Time: 0.281 ms
+Execution Time: 0.541 ms

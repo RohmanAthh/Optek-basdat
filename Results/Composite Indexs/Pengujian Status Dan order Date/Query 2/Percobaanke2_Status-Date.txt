@@ -1,0 +1,38 @@
+Limit  (cost=11217.43..11217.46 rows=10 width=60) (actual time=126.192..126.195 rows=1.00 loops=1)
+  Buffers: shared hit=3857
+  ->  Sort  (cost=11217.43..11229.93 rows=5000 width=60) (actual time=126.190..126.193 rows=1.00 loops=1)
+        Sort Key: (sum(((oi.quantity)::numeric * oi.unit_price))) DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=3857
+        ->  HashAggregate  (cost=11046.88..11109.38 rows=5000 width=60) (actual time=126.172..126.178 rows=1.00 loops=1)
+              Group Key: p.product_id
+              Batches: 1  Memory Usage: 161kB
+              Buffers: shared hit=3857
+              ->  Hash Join  (cost=3803.03..10507.86 rows=43122 width=33) (actual time=7.924..104.254 rows=43986.00 loops=1)
+                    Hash Cond: (oi.product_id = p.product_id)
+                    Buffers: shared hit=3857
+                    ->  Hash Join  (cost=3587.53..10179.06 rows=43122 width=21) (actual time=6.095..90.680 rows=43986.00 loops=1)
+                          Hash Cond: (oi.order_id = o.order_id)
+                          Buffers: shared hit=3754
+                          ->  Seq Scan on order_items oi  (cost=0.00..5804.00 rows=300000 width=29) (actual time=0.022..21.438 rows=300000.00 loops=1)
+                                Buffers: shared hit=2804
+                          ->  Hash  (cost=3407.86..3407.86 rows=14374 width=8) (actual time=6.005..6.006 rows=14662.00 loops=1)
+                                Buckets: 16384  Batches: 1  Memory Usage: 701kB
+                                Buffers: shared hit=950
+                                ->  Bitmap Heap Scan on orders o  (cost=239.57..3407.86 rows=14374 width=8) (actual time=0.816..3.779 rows=14662.00 loops=1)
+                                      Recheck Cond: (((status)::text = 'completed'::text) AND (order_date >= (CURRENT_DATE - '180 days'::interval)) AND (order_date < (CURRENT_DATE - '90 days'::interval)))
+                                      Heap Blocks: exact=935
+                                      Buffers: shared hit=950
+                                      ->  Bitmap Index Scan on idx_orders_status_date  (cost=0.00..235.98 rows=14374 width=0) (actual time=0.667..0.667 rows=14662.00 loops=1)
+                                            Index Cond: (((status)::text = 'completed'::text) AND (order_date >= (CURRENT_DATE - '180 days'::interval)) AND (order_date < (CURRENT_DATE - '90 days'::interval)))
+                                            Index Searches: 1
+                                            Buffers: shared hit=15
+                    ->  Hash  (cost=153.00..153.00 rows=5000 width=20) (actual time=1.790..1.791 rows=5000.00 loops=1)
+                          Buckets: 8192  Batches: 1  Memory Usage: 322kB
+                          Buffers: shared hit=103
+                          ->  Seq Scan on products p  (cost=0.00..153.00 rows=5000 width=20) (actual time=0.068..0.765 rows=5000.00 loops=1)
+                                Buffers: shared hit=103
+Planning:
+  Buffers: shared hit=8
+Planning Time: 0.572 ms
+Execution Time: 126.670 ms
