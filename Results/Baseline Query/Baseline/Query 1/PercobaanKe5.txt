@@ -1,0 +1,18 @@
+Limit  (cost=4031.41..4031.43 rows=5 width=52) (actual time=8.842..8.844 rows=7.00 loops=1)
+  Buffers: shared hit=2776
+  ->  Sort  (cost=4031.41..4031.43 rows=5 width=52) (actual time=8.840..8.841 rows=7.00 loops=1)
+        Sort Key: o.order_date DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=2776
+        ->  Nested Loop  (cost=0.29..4031.36 rows=5 width=52) (actual time=0.989..8.816 rows=7.00 loops=1)
+              Buffers: shared hit=2776
+              ->  Index Scan using customers_pkey on customers c  (cost=0.29..8.30 rows=1 width=22) (actual time=0.019..0.023 rows=1.00 loops=1)
+                    Index Cond: (customer_id = 100)
+                    Index Searches: 1
+                    Buffers: shared hit=3
+              ->  Seq Scan on orders o  (cost=0.00..4023.00 rows=5 width=38) (actual time=0.967..8.781 rows=7.00 loops=1)
+                    Filter: (customer_id = 100)
+                    Rows Removed by Filter: 99993
+                    Buffers: shared hit=2773
+Planning Time: 0.163 ms
+Execution Time: 8.879 ms

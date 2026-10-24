@@ -1,0 +1,24 @@
+Limit  (cost=32.17..32.18 rows=5 width=52) (actual time=0.177..0.180 rows=7.00 loops=1)
+  Buffers: shared hit=10 read=2
+  ->  Sort  (cost=32.17..32.18 rows=5 width=52) (actual time=0.176..0.177 rows=7.00 loops=1)
+        Sort Key: o.order_date DESC
+        Sort Method: quicksort  Memory: 25kB
+        Buffers: shared hit=10 read=2
+        ->  Nested Loop  (cost=4.62..32.11 rows=5 width=52) (actual time=0.144..0.160 rows=7.00 loops=1)
+              Buffers: shared hit=10 read=2
+              ->  Index Scan using customers_pkey on customers c  (cost=0.29..8.30 rows=1 width=22) (actual time=0.021..0.022 rows=1.00 loops=1)
+                    Index Cond: (customer_id = 100)
+                    Index Searches: 1
+                    Buffers: shared hit=3
+              ->  Bitmap Heap Scan on orders o  (cost=4.33..23.76 rows=5 width=38) (actual time=0.118..0.131 rows=7.00 loops=1)
+                    Recheck Cond: (customer_id = 100)
+                    Heap Blocks: exact=7
+                    Buffers: shared hit=7 read=2
+                    ->  Bitmap Index Scan on idx_orders_customer_id  (cost=0.00..4.33 rows=5 width=0) (actual time=0.089..0.089 rows=7.00 loops=1)
+                          Index Cond: (customer_id = 100)
+                          Index Searches: 1
+                          Buffers: shared read=2
+Planning:
+  Buffers: shared hit=28 read=1 dirtied=3
+Planning Time: 0.501 ms
+Execution Time: 0.232 ms

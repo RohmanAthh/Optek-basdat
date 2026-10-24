@@ -1,0 +1,30 @@
+Limit  (cost=5511.00..5557.47 rows=100 width=35) (actual time=86.798..96.133 rows=100.00 loops=1)
+  Buffers: shared hit=3111
+  ->  Nested Loop  (cost=5511.00..12296.11 rows=14601 width=35) (actual time=86.797..96.114 rows=100.00 loops=1)
+        Buffers: shared hit=3111
+        ->  Gather Merge  (cost=5510.70..7174.78 rows=14601 width=29) (actual time=86.542..95.164 rows=100.00 loops=1)
+              Workers Planned: 1
+              Workers Launched: 1
+              Buffers: shared hit=2811
+              ->  Sort  (cost=4510.69..4532.16 rows=8589 width=29) (actual time=18.519..18.534 rows=50.00 loops=2)
+                    Sort Key: o.order_date
+                    Sort Method: quicksort  Memory: 1077kB
+                    Buffers: shared hit=2811
+                    Worker 0:  Sort Method: quicksort  Memory: 25kB
+                    ->  Parallel Seq Scan on orders o  (cost=0.00..3949.47 rows=8589 width=29) (actual time=0.533..14.576 rows=7390.00 loops=2)
+                          Filter: (((status)::text = 'pending'::text) AND (order_date < (CURRENT_DATE - '7 days'::interval)))
+                          Rows Removed by Filter: 42610
+                          Buffers: shared hit=2773
+        ->  Memoize  (cost=0.30..0.46 rows=1 width=22) (actual time=0.009..0.009 rows=1.00 loops=100)
+              Cache Key: o.customer_id
+              Cache Mode: logical
+              Hits: 0  Misses: 100  Evictions: 0  Overflows: 0  Memory Usage: 13kB
+              Buffers: shared hit=300
+              ->  Index Scan using customers_pkey on customers c  (cost=0.29..0.45 rows=1 width=22) (actual time=0.005..0.005 rows=1.00 loops=100)
+                    Index Cond: (customer_id = o.customer_id)
+                    Index Searches: 100
+                    Buffers: shared hit=300
+Planning:
+  Buffers: shared hit=6
+Planning Time: 0.263 ms
+Execution Time: 96.682 ms
