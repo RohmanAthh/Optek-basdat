@@ -1,0 +1,32 @@
+﻿                                                                                        QUERY PLAN                                                                                         
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Delete on orders_bench_noidx  (cost=4652.02..6624.35 rows=0 width=0) (actual time=39.969..39.974 rows=0.00 loops=1)
+   Buffers: shared hit=2873
+   ->  Hash Join  (cost=4652.02..6624.35 rows=28518 width=38) (actual time=20.907..39.305 rows=1000.00 loops=1)
+         Hash Cond: (orders_bench_noidx.order_id = "ANY_subquery".order_id)
+         Buffers: shared hit=1873
+         ->  Seq Scan on orders_bench_noidx  (cost=0.00..1505.35 rows=57035 width=14) (actual time=0.033..10.381 rows=100000.00 loops=1)
+               Buffers: shared hit=935
+         ->  Hash  (cost=4649.52..4649.52 rows=200 width=40) (actual time=20.847..20.849 rows=1000.00 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 79kB
+               Buffers: shared hit=938
+               ->  HashAggregate  (cost=4647.52..4649.52 rows=200 width=40) (actual time=20.501..20.637 rows=1000.00 loops=1)
+                     Group Key: "ANY_subquery".order_id
+                     Batches: 1  Memory Usage: 137kB
+                     Buffers: shared hit=938
+                     ->  Subquery Scan on "ANY_subquery"  (cost=4632.52..4645.02 rows=1000 width=40) (actual time=19.797..20.101 rows=1000.00 loops=1)
+                           Buffers: shared hit=938
+                           ->  Limit  (cost=4632.52..4635.02 rows=1000 width=8) (actual time=19.759..19.868 rows=1000.00 loops=1)
+                                 Buffers: shared hit=938
+                                 ->  Sort  (cost=4632.52..4775.11 rows=57035 width=8) (actual time=19.756..19.806 rows=1000.00 loops=1)
+                                       Sort Key: orders_bench_noidx_1.order_id
+                                       Sort Method: top-N heapsort  Memory: 49kB
+                                       Buffers: shared hit=938
+                                       ->  Seq Scan on orders_bench_noidx orders_bench_noidx_1  (cost=0.00..1505.35 rows=57035 width=8) (actual time=0.008..15.413 rows=100000.00 loops=1)
+                                             Buffers: shared hit=935
+ Planning:
+   Buffers: shared hit=65
+ Planning Time: 0.700 ms
+ Execution Time: 40.289 ms
+(28 rows)
+

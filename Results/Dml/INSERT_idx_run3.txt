@@ -1,0 +1,20 @@
+﻿                                                                              QUERY PLAN                                                                               
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Insert on orders_bench_idx  (cost=4775.11..4787.61 rows=0 width=0) (actual time=50.296..50.298 rows=0.00 loops=1)
+   Buffers: shared hit=6251 dirtied=14 written=14
+   ->  Subquery Scan on "*SELECT*"  (cost=4775.11..4787.61 rows=1000 width=104) (actual time=41.089..41.441 rows=1000.00 loops=1)
+         Buffers: shared hit=938
+         ->  Limit  (cost=4775.11..4777.61 rows=1000 width=112) (actual time=41.087..41.245 rows=1000.00 loops=1)
+               Buffers: shared hit=938
+               ->  Sort  (cost=4775.11..4917.69 rows=57035 width=112) (actual time=41.084..41.174 rows=1000.00 loops=1)
+                     Sort Key: orders_bench_idx_1.order_id
+                     Sort Method: top-N heapsort  Memory: 181kB
+                     Buffers: shared hit=938
+                     ->  Seq Scan on orders_bench_idx orders_bench_idx_1  (cost=0.00..1647.94 rows=57035 width=112) (actual time=0.030..22.120 rows=100000.00 loops=1)
+                           Buffers: shared hit=935
+ Planning:
+   Buffers: shared hit=145
+ Planning Time: 1.033 ms
+ Execution Time: 50.422 ms
+(16 rows)
+
